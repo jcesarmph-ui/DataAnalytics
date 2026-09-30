@@ -35,7 +35,7 @@ Fontes de dados
                          │
                          ↓
                     Dashboard
-
+```
 ## Tecnologias escolhidas
 
 | Etapa | Tecnologia | Função |
