@@ -1,0 +1,11 @@
+id,cliente,data,avaliacao,comentario,categoria,sentimento_inicial
+1,Cliente_001,2026-09-01,5,Atendimento excelente e produto chegou antes do prazo,produto,positivo
+2,Cliente_002,2026-09-01,2,Produto apresentou defeito após poucos dias de uso,produto,negativo
+3,Cliente_003,2026-09-02,4,"Gostei do produto, mas a entrega demorou",entrega,positivo
+4,Cliente_004,2026-09-02,1,Atendimento muito ruim e problema não foi resolvido,atendimento,negativo
+5,Cliente_005,2026-09-03,5,"Excelente experiência, voltarei a comprar",atendimento,positivo
+6,Cliente_006,2026-09-03,3,"Produto bom, porém a embalagem chegou danificada",produto,neutro
+7,Cliente_007,2026-09-04,2,A entrega atrasou bastante e ninguém informou o motivo,entrega,negativo
+8,Cliente_008,2026-09-04,5,Atendimento rápido e eficiente,atendimento,positivo
+9,Cliente_009,2026-09-05,1,Recebi o produto errado e tive dificuldade para trocar,produto,negativo
+10,Cliente_010,2026-09-05,4,Produto de boa qualidade e entrega dentro do prazo,entrega,positivo
