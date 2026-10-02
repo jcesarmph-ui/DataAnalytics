@@ -46,7 +46,7 @@ tfidf_df.insert(
 tfidf_df.to_csv(
     OUTPUT_FILE,
     index=False,
-    encoding="utf-8"S
+    encoding="utf-8"
 )
 
 
