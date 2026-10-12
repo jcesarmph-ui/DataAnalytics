@@ -1,84 +1,69 @@
-# Arquitetura do Data Analytics
+﻿# Arquitetura do Pipeline de Big Data
 
 ## Visão geral
 
-A arquitetura do Data Analytics foi projetada para receber dados de diferentes fontes e processá-los de forma escalável e resiliente.
+O projeto implementa um pipeline de processamento de avaliações de clientes, integrando ingestão de eventos, processamento de texto, armazenamento NoSQL, ETL, orquestração e visualização analítica.
 
-O ambiente considera dois modos principais de ingestão:
+## Arquitetura
 
-- Batch: processamento de grandes volumes de dados acumulados;
-- Streaming: processamento de eventos em tempo quase real.
+1. **Kafka Producer:** envia avaliações para o sistema de mensageria.
+2. **Apache Kafka:** transporta os eventos entre produtor e consumidor.
+3. **Kafka Consumer:** recebe e encaminha os dados para processamento.
+4. **NLP e Machine Learning:** utiliza TF-IDF e Logistic Regression para classificação de sentimentos.
+5. **MongoDB:** armazena os registros processados na base `data_analytics`, coleção `reviews_processed`.
+6. **Python ETL:** consulta o MongoDB, converte os campos necessários e exporta `data/processed/reviews_analytics.csv`.
+7. **Apache Airflow:** agenda e orquestra a execução do ETL por meio da DAG `etl_reviews_mongodb_csv`.
+8. **Power BI:** utiliza o CSV para construir indicadores, gráficos e filtros interativos.
 
-## Fluxo geral
+## Tecnologias
 
-```text
-Fontes de dados
-      │
-      ├─────────────── Batch
-      │                  │
-      │                  ↓
-      │              Ingestão
-      │
-      └────────────── Streaming
-                         │
-                         ↓
-                     Ingestão
-                         │
-                         ↓
-                  Armazenamento
-                         │
-                         ↓
-                   Processamento
-                         │
-                         ↓
-                  Análise e ML
-                         │
-                         ↓
-                    Dashboard
+- Python e Pandas
+- Apache Kafka 4.3.1 com KRaft
+- TF-IDF e Logistic Regression
+- MongoDB e PyMongo
+- Apache Airflow 3.3.1
+- Docker Compose
+- Power BI
+- Git e GitHub
+
+## Organização
+
+- `src/`: produtor, consumidor, classificação de sentimentos e ETL.
+- `data/models/`: modelos treinados localmente.
+- `data/processed/`: dados analíticos exportados.
+- `airflow/dags/`: definições dos fluxos de orquestração.
+- `docs/`: documentação do projeto.
+- `notebooks/`: espaço para análises exploratórias.
+- `DataAnalytics_Dashboard.pbix`: dashboard do Power BI.
+
+## Execução do ETL
+
+O ambiente do Airflow utiliza Docker Compose. O serviço MongoDB precisa estar acessível pelo container.
+
+Na pasta `airflow`, execute:
+
+```powershell
+docker compose up -d
 ```
-## Tecnologias escolhidas
 
-| Etapa | Tecnologia | Função |
-|---|---|---|
-| Ingestão Batch | Python | Coleta e preparação inicial dos dados |
-| Ingestão Streaming | Apache Kafka | Recebimento de eventos em tempo quase real |
-| Armazenamento | MongoDB | Armazenamento de dados semiestruturados |
-| Processamento | Apache Spark | Processamento distribuído dos dados |
-| Orquestração | Apache Airflow | Automação e gerenciamento dos pipelines |
-| Machine Learning | Python / Scikit-learn | Modelagem e análise dos dados |
-| NLP | Python | Processamento e análise dos textos |
-| Dashboard | Power BI | Visualização dos indicadores |
+A interface do Airflow fica disponível em `http://localhost:8080`.
 
-## Justificativa
+A DAG `etl_reviews_mongodb_csv` executa `src/mongo_to_csv.py`, que gera o CSV utilizado pelo Power BI. A programação definida é diária, às 08h de Brasília, considerando a configuração UTC do Airflow.
 
-### Python
+Para encerrar o ambiente:
 
-Será utilizado na coleta, preparação e análise inicial dos dados. Também servirá como base para os componentes de Machine Learning e processamento de linguagem natural.
+```powershell
+docker compose down
+```
 
-### Apache Kafka
+O comando acima não remove o volume persistente do Airflow.
 
-Será utilizado para simular a ingestão de dados em streaming, permitindo o recebimento contínuo de eventos, como novos comentários, logs e registros de atendimento.
+## Configuração e segurança
 
-### MongoDB
+O endereço do MongoDB é configurado pela variável `MONGODB_URI`. O script Python utiliza `mongodb://localhost:27017/` como padrão local, enquanto o Docker Compose utiliza `mongodb://host.docker.internal:27017/` para acessar o MongoDB executado no Windows.
 
-Será utilizado para armazenar dados semiestruturados, especialmente documentos provenientes de comentários, avaliações e registros de atendimento.
+Credenciais, tokens e arquivos de ambiente com segredos não devem ser versionados. Modelos treinados e arquivos temporários devem permanecer fora do controle de versão quando não forem necessários para a reprodução do projeto.
 
-### Apache Spark
+## Considerações
 
-Será utilizado para o processamento de grandes volumes de dados, permitindo demonstrar conceitos de processamento distribuído.
-
-### Apache Airflow
-
-Será utilizado posteriormente para orquestrar e automatizar os pipelines de processamento.
-
-### Scikit-learn
-
-Será utilizado para aplicar modelos de Machine Learning sobre os dados processados.
-
-### NLP
-
-Será utilizado para analisar os comentários e textos recebidos pela plataforma, incluindo técnicas de tokenização, representação textual e análise semântica.
-
-### Power BI
-
-Será utilizado para construir dashboards com indicadores de negócio e métricas relacionadas aos dados processados.
+O pipeline integra os componentes principais de engenharia de dados e análise. A qualidade das classificações depende do modelo treinado e dos dados utilizados. Antes de aplicações reais, recomenda-se validar o desempenho do classificador, a integridade dos dados e o tratamento de falhas.

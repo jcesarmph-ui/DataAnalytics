@@ -7,7 +7,7 @@ from airflow.sdk import dag, task
 @dag(
     dag_id="etl_reviews_mongodb_csv",
     description="Extrai avaliações do MongoDB e gera o CSV para o Power BI",
-    schedule=None,
+    schedule="0 11 * * *",  # Todos os dias às 08h no horário de Brasília
     start_date=datetime(2026, 1, 1),
     catchup=False,
     tags=["big-data", "etl", "mongodb", "power-bi"],
