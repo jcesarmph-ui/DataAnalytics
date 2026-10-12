@@ -1,0 +1,11 @@
+﻿id,categoria,avaliacao,comentario,sentimento
+1,produto,5,Produto excelente e chegou rapidamente,positivo
+2,produto,1,Produto chegou quebrado e muito atrasado,positivo
+3,produto,3,"O produto é razoável, nada demais",positivo
+4,atendimento,5,Atendimento muito bom e equipe muito prestativa,positivo
+5,atendimento,1,Péssimo atendimento e demoraram para responder,positivo
+6,entrega,4,A entrega foi rápida e o produto chegou bem,positivo
+7,entrega,2,A entrega demorou muito e a embalagem estava ruim,positivo
+8,produto,4,Gostei bastante do produto e recomendo,positivo
+9,produto,2,Não gostei da qualidade do produto,positivo
+10,atendimento,3,"Atendimento normal, poderia ser melhor",neutro
