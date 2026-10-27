@@ -1,4 +1,0 @@
-data/models/
-src/test_mongodb.py
-__pycache__/
-*.pyc
