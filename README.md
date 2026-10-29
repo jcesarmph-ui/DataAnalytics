@@ -36,7 +36,6 @@
   <a href="#-arquitetura-do-pipeline">Arquitetura</a> •
   <a href="#-etapas-de-processamento">Etapas</a> •
   <a href="#-dashboard-analítico">Dashboard</a> •
-  <a href="#-como-executar">Como executar</a> •
   <a href="#-tecnologias-e-ferramentas">Tecnologias</a> •
   <a href="#-roteiro">Roteiro</a>
 </p>
@@ -284,75 +283,14 @@ entre diferentes categorias de produtos.
 | Nota média por categoria | 📊 Comparação |
 | Filtros por categoria, nota e sentimento | 🎛️ Interativo |
 
-## 🚀 Como executar
+## ⏱️ Orquestração
 
-> [!IMPORTANT]
-> O repositório **não inclui** um `requirements.txt` na raiz nem a configuração do broker Kafka. Os
-> scripts esperam **Kafka em `localhost:9092`** e **MongoDB em `localhost:27017`** já em execução.
-
-<details>
-<summary><b>📦 Bibliotecas usadas pelos scripts</b></summary>
-
-`pandas`, `scikit-learn`, `joblib`, `pymongo`, cliente Kafka para Python (`kafka`), `nltk`, `matplotlib`
-e `pyspark` (requer Java). O contêiner do Airflow instala apenas `pandas` e `pymongo`
-([`airflow/requirements.txt`](airflow/requirements.txt)).
-
-</details>
-
-**1. Preparar os dados e treinar o modelo**
-
-```powershell
-python src\process_reviews.py
-python src\sentiment_model.py
-```
-
-**2. Transmitir e classificar as avaliações** (dois terminais)
-
-```powershell
-# Terminal 1 — consumidor: classifica e grava no MongoDB
-python src\kafka_consumer.py
-
-# Terminal 2 — produtor: envia as avaliações de teste
-python src\kafka_producer.py
-```
-
-**3. Executar o ETL com Airflow** — na pasta `airflow`:
-
-```powershell
-docker compose up -d
-```
-
-A interface do Airflow fica disponível em **http://localhost:8080**. A DAG `etl_reviews_mongodb_csv`
-executa `src/mongo_to_csv.py`, que gera o CSV usado pelo Power BI.
+O **Apache Airflow** agenda o ETL: a DAG `etl_reviews_mongodb_csv` executa `src/mongo_to_csv.py`, que extrai as avaliações do MongoDB e gera o CSV usado pelo Power BI.
 
 | DAG | Agendamento | Função |
 |---|---|---|
 | `etl_reviews_mongodb_csv` | Diário, às 08h de Brasília (`0 11 * * *` em UTC) | Extrai do MongoDB e gera `data/processed/reviews_analytics.csv` |
 | `primeira_dag_big_data` | Manual | Fluxo de teste do ambiente Airflow |
-
-Para encerrar o ambiente:
-
-```powershell
-docker compose down
-```
-
-> [!NOTE]
-> O comando acima **não remove** o volume persistente do Airflow.
-
-**4. Abrir o dashboard** — abra `DataAnalytics_Dashboard.pbix` no Power BI Desktop.
-
-<details>
-<summary><b>🔐 Configuração e segurança</b></summary>
-
-- O endereço do MongoDB é configurado pela variável **`MONGODB_URI`**.
-- O script Python usa `mongodb://localhost:27017/` como padrão local; o Docker Compose usa
-  `mongodb://host.docker.internal:27017/` para acessar o MongoDB executado no Windows. O serviço MongoDB
-  precisa estar acessível pelo contêiner.
-- Credenciais, tokens e arquivos de ambiente com segredos **não devem ser versionados**.
-- Modelos treinados e arquivos temporários devem permanecer fora do controle de versão quando não forem
-  necessários para a reprodução do projeto (`data/models/` está no `.gitignore`).
-
-</details>
 
 ## 🧰 Tecnologias e Ferramentas
 
